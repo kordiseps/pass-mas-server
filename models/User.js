@@ -4,7 +4,7 @@ const UserSchema = mongoose.Schema({
         type:String,
         required:true
     },
-    pinHash : {
+    pinCode : {
         type:String,
         required:true
     },

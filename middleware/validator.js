@@ -1,9 +1,9 @@
 const { body, validationResult } = require("express-validator");
-const userRequestRules = () => {
-  return [body("userMail").isEmail(), body("pinHash").isLength({ min: 5 })];
+const userRules = () => {
+  return [body("userMail").isEmail(), body("pinCode").isLength({ min: 5 })];
 };
 
-const dataRequestRules = () => {
+const dataRules = () => {
   return [
     body("app").isLength({ min: 3 }),
     body("username").isLength({ min: 5 }),
@@ -11,7 +11,7 @@ const dataRequestRules = () => {
   ];
 };
 const validateRequest = (req, res, next) => {
-  console.log("validateRequest ok")
+  console.log("validateRequest ok");
   const errors = validationResult(req);
   if (errors.isEmpty()) {
     return next();
@@ -25,7 +25,7 @@ const validateRequest = (req, res, next) => {
 };
 
 module.exports = {
-  userRequestRules,
-  dataRequestRules,
+  userRules,
+  dataRules,
   validateRequest,
 };

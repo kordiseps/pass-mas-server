@@ -5,7 +5,7 @@ module.exports = async (req, res, next) => {
     const token = req.header("auth-key");
     const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
     const existingUser = await User.findOne({
-      _id: decodedToken._id,
+      _id: decodedToken.id,
     }).exec();
     if (existingUser === null) {
       res.status(402).send({

@@ -4,7 +4,7 @@ const Data = require("../models/Data");
 const checkAuth = require("../middleware/checkauth");
 
 const {
-  dataRequestRules,
+  dataRules,
   validateRequest,
 } = require("../middleware/validator");
 
@@ -12,7 +12,7 @@ router.use(checkAuth);
 
 router.post(
   "/",
-  dataRequestRules(),
+  dataRules(),
   validateRequest,
   dataMustNotExist,
   async (req, res) => {
@@ -38,7 +38,7 @@ router.get("/:id", dataMustExist, async (req, res) => {
 });
 router.patch(
   "/:id",
-  dataRequestRules(),
+  dataRules(),
   validateRequest,
   dataMustExist,
   async (req, res) => {
@@ -59,6 +59,7 @@ router.patch(
     }
   }
 );
+
 router.delete("/:id", dataMustExist, async (req, res) => {
     console.log("data/delete/:id")
     const query = { _id: req.Data._id };
@@ -66,7 +67,7 @@ router.delete("/:id", dataMustExist, async (req, res) => {
   if (deleteResult.ok === 1) {
     res.status(200).send({ message: "success" });
   } else {
-    return res.status(400).json({ errors: "Couldn't remove" });
+    return res.status(400).json({ errors: "Could not remove" });
   }
 });
 
@@ -75,7 +76,7 @@ async function dataMustExist(req, res, next) {
     _id: req.params.id,
   }).exec();
   if (existingData === null) {
-    return res.status(400).json({ errors: "Data doesnt exist." });
+    return res.status(400).json({ errors: "Data does not exist." });
   } else {
     req.Data = existingData;
   }

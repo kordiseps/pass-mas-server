@@ -2,88 +2,56 @@ const express = require("express");
 const router = express.Router();
 const User = require("../models/User");
 const jwt = require("jsonwebtoken");
-const checkAuth = require('../middleware/checkauth');
-const { userRequestRules, validateRequest } = require("../middleware/validator");
+const checkAuth = require("../middleware/checkauth");
+const { userRules, validateRequest } = require("../middleware/validator");
 
-router.get(
-  "/login",
-  userRequestRules(),
-  validateRequest,
-  findUser,
-  userMustExist,
-  async (req, res) => {
-    console.log("user/get/login")
-    try {
-      const token = jwt.sign({ _id: req.User._id }, process.env.JWT_SECRET, {
-        expiresIn: "10m",
-      });
-      res.status(200).send({ message: "success", token: token });
-    } catch (error) {
-      console.log(error);
-      res.status(400).send({ message: error });
-    }
+router.get("/login", userRules(), validateRequest, async (req, res) => {
+  const existingUser = await User.findOne({
+    userMail: req.body.userMail,
+    pinCode: req.body.pinCode,
+  }).exec();
+  if (existingUser === null) {
+    return res.status(404).json({ errors: "User does not exist." });
+  } else {
+    const token = jwt.sign({ id: existingUser._id }, process.env.JWT_SECRET, {
+      expiresIn: "10m",
+    });
+    res.status(200).send({ message: "success", token: token });
   }
-);
+});
 
-router.post(
-  "/register",
-  userRequestRules(),
-  validateRequest,
-  findUser,
-  userMustNotExist,
-  async (req, res) => {
-    console.log("user/post/register")
+router.post("/register", userRules(), validateRequest, async (req, res) => {
+  const existingUser = await User.findOne({
+    userMail: req.body.userMail,
+  }).exec();
+  if (existingUser !== null) {
+    return res.status(403).json({ errors: "User exists." });
+  } else {
     const user = new User({
       userMail: req.body.userMail,
-      pinHash: req.body.pinHash,
+      pinCode: req.body.pinCode,
     });
     const savedUser = await user.save();
     res.status(200).send(savedUser);
   }
-);
+});
 
 router.post(
   "/changePassword",
-  userRequestRules(),
+  userRules(),
   validateRequest,
   checkAuth,
   async (req, res) => {
-    console.log("user/post/changePassword")
     const updateResult = await User.updateOne(
       { _id: req.User._id },
-      { $set: { pinHash: req.body.pinHash, updatedAt: new Date() } }
+      { $set: { pinCode: req.body.pinCode, updatedAt: new Date() } }
     );
-    if (updateResult.nModified > 0) {
-      res.status(200).send({message:"success"});
+    if (updateResult.ok === 1) {
+      res.status(200).send({ message: "success" });
     } else {
       return res.status(400).json({ errors: "Couldn't change" });
     }
   }
 );
-
-async function findUser(req, res, next) {
-  const existingUser = await User.findOne({
-    userMail: req.body.userMail,
-  }).exec();
-  if (existingUser === null) {
-    req.UserExists = false;
-  } else {
-    req.UserExists = true;
-    req.User = existingUser;
-  }
-  next();
-}
-async function userMustExist(req, res, next) {
-  if (req.UserExists === false) {
-    return res.status(400).json({ errors: "User doesnt exists." });
-  }
-  next();
-}
-async function userMustNotExist(req, res, next) {
-  if (req.UserExists === true) {
-    return res.status(400).json({ errors: "User exist." });
-  }
-  next();
-}
 
 module.exports = router;
