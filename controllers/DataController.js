@@ -3,10 +3,7 @@ const router = express.Router();
 const Data = require("../models/Data");
 const checkAuth = require("../middleware/checkauth");
 
-const {
-  dataRules,
-  validateRequest,
-} = require("../middleware/validator");
+const { dataRules, validateRequest } = require("../middleware/validator");
 
 router.use(checkAuth);
 
@@ -16,7 +13,7 @@ router.post(
   validateRequest,
   dataMustNotExist,
   async (req, res) => {
-    console.log("data/post")
+    console.log("data/post");
     const data = new Data({
       userId: req.User._id,
       app: req.body.app,
@@ -24,17 +21,25 @@ router.post(
       password: req.body.password,
     });
     const savedData = await data.save();
-    res.status(200).send({ message: savedData._id });
+    res.status(200).send({
+      isSuccess: true,
+      message: savedData._id,
+    });
   }
 );
 router.get("/", async (req, res) => {
-    console.log("data/get")
-    const savedDatas = await Data.find();
-  res.status(200).send(savedDatas);
+  console.log("data/get");
+  const savedDatas = await Data.find();
+  res.status(200).send({
+    isSuccess: true,
+  });
 });
 router.get("/:id", dataMustExist, async (req, res) => {
-    console.log("data/get/:id")
-    res.status(200).send(req.Data);
+  console.log("data/get/:id");
+  res.status(200).send({
+    isSuccess: true,
+    data: req.Data,
+  });
 });
 router.patch(
   "/:id",
@@ -42,7 +47,7 @@ router.patch(
   validateRequest,
   dataMustExist,
   async (req, res) => {
-    console.log("data/patch/:id")
+    console.log("data/patch/:id");
     const query = { _id: req.Data._id };
     const updateResult = await Data.updateOne(query, {
       $set: {
@@ -53,21 +58,31 @@ router.patch(
       },
     });
     if (updateResult.ok === 1) {
-      res.status(200).send({ message: "success" });
+      res.status(200).send({
+        isSuccess: true,
+      });
     } else {
-      return res.status(400).json({ errors: "Couldn't change" });
+      return res.status(400).json({
+        isSuccess: false,
+        errors: "Couldn't change",
+      });
     }
   }
 );
 
 router.delete("/:id", dataMustExist, async (req, res) => {
-    console.log("data/delete/:id")
-    const query = { _id: req.Data._id };
+  console.log("data/delete/:id");
+  const query = { _id: req.Data._id };
   var deleteResult = await Data.deleteOne(query);
   if (deleteResult.ok === 1) {
-    res.status(200).send({ message: "success" });
+    res.status(200).send({
+      isSuccess: true,
+    });
   } else {
-    return res.status(400).json({ errors: "Could not remove" });
+    return res.status(400).json({
+      isSuccess: false,
+      errors: "Could not remove",
+    });
   }
 });
 
@@ -76,7 +91,10 @@ async function dataMustExist(req, res, next) {
     _id: req.params.id,
   }).exec();
   if (existingData === null) {
-    return res.status(400).json({ errors: "Data does not exist." });
+    return res.status(400).json({
+      isSuccess: false,
+      errors: "Data does not exist.",
+    });
   } else {
     req.Data = existingData;
   }
@@ -91,7 +109,10 @@ async function dataMustNotExist(req, res, next) {
   }).exec();
 
   if (existingData !== null) {
-    return res.status(400).json({ errors: "Data exists." });
+    return res.status(400).json({
+      isSuccess: false,
+      errors: "Data exists.",
+    });
   } else {
     next();
   }

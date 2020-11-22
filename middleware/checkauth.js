@@ -9,6 +9,7 @@ module.exports = async (req, res, next) => {
     }).exec();
     if (existingUser === null) {
       res.status(402).send({
+        isSuccess:false,
         message: "Auth failed",
       });
     } else {
@@ -17,6 +18,7 @@ module.exports = async (req, res, next) => {
     next();
   } catch (error) {
     res.status(401).send({
+      isSuccess:false,
       message: "Auth failed",
     });
   }
