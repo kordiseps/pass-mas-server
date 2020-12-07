@@ -8,6 +8,7 @@ const dataRules = () => {
     body("app").isLength({ min: 3 }),
     body("username").isLength({ min: 5 }),
     body("password").isLength({ min: 4 }),
+    body("color").isLength({ min: 2 }),
   ];
 };
 const validateRequest = (req, res, next) => {

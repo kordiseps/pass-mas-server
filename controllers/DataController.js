@@ -19,6 +19,7 @@ router.post(
       app: req.body.app,
       username: req.body.username,
       password: req.body.password,
+      color: req.body.color,
     });
     const savedData = await data.save();
     res.status(200).send({
@@ -32,6 +33,7 @@ router.get("/", async (req, res) => {
   const savedDatas = await Data.find();
   res.status(200).send({
     isSuccess: true,
+    data:savedDatas
   });
 });
 router.get("/:id", dataMustExist, async (req, res) => {
@@ -54,6 +56,7 @@ router.patch(
         app: req.body.app,
         username: req.body.username,
         password: req.body.password,
+        color: req.body.color,
         updatedAt: new Date(),
       },
     });
