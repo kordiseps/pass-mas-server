@@ -5,7 +5,7 @@ const jwt = require("jsonwebtoken");
 const checkAuth = require("../middleware/checkauth");
 const { userRules, validateRequest } = require("../middleware/validator");
 
-router.get("/login", userRules(), validateRequest, async (req, res) => {
+router.post("/login", userRules(), validateRequest, async (req, res) => {
   const existingUser = await User.findOne({
     userMail: req.body.userMail,
     pinCode: req.body.pinCode,
