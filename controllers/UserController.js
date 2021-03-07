@@ -70,4 +70,29 @@ router.post(
   }
 );
 
+router.post("/removeAccount", checkAuth, async (req, res) => {
+  const Data = require("../models/Data");
+  //send e mail datas to user mail address(username)
+  const userId = req.User._id;
+  const query = { userId: userId };
+  const dataDeleteResult = await Data.deleteMany(query);
+  if (dataDeleteResult.ok !== 1) {
+    return res.status(400).json({
+      isSuccess: false,
+      errors: "Couldn't remove data",
+    });
+  }
+  const userDeleteResult = await User.deleteOne({ _id: userId });
+  if (userDeleteResult.ok !== 1) {
+    return res.status(400).json({
+      isSuccess: false,
+      errors: "Data removed. User couldn't remove.",
+    });
+  } else {
+    res.status(200).send({
+      isSuccess: true,
+    });
+  }
+});
+
 module.exports = router;
