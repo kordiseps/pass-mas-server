@@ -12,7 +12,7 @@ const dataRules = () => {
   ];
 };
 const validateRequest = (req, res, next) => {
-  console.log("validateRequest ok");
+  console.log("validateRequest");
   const errors = validationResult(req);
   if (errors.isEmpty()) {
     return next();
