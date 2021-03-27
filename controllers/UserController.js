@@ -3,7 +3,7 @@ const router = express.Router();
 const User = require("../models/User");
 const jwt = require("jsonwebtoken");
 const checkAuth = require("../middleware/checkauth");
-const { userRules, validateRequest } = require("../middleware/validator");
+const { userRules, validateRequest, userChangePasswordRules } = require("../middleware/validator");
 
 router.post("/login", userRules(), validateRequest, async (req, res) => {
   const existingUser = await User.findOne({
@@ -49,7 +49,7 @@ router.post("/register", userRules(), validateRequest, async (req, res) => {
 
 router.post(
   "/changePassword",
-  userRules(),
+  userChangePasswordRules(),
   validateRequest,
   checkAuth,
   async (req, res) => {
