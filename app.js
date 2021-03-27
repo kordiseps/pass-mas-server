@@ -35,5 +35,3 @@ mongoose.connect(
 app.listen(process.env.PORT || 5000, () => {
   console.log("sunucu ayakta");
 });
-
-//mongodb+srv://admin:qvkLpBhEUigott1F@cluster.lf9ra.mongodb.net/passmas?retryWrites=true&w=majority

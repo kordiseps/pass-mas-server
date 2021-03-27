@@ -1,6 +1,9 @@
 const { body, validationResult } = require("express-validator");
 const userRules = () => {
-  return [body("userMail").isEmail(), body("pinCode").isLength({ min: 5 })];
+  return [body("userMail").isEmail(), body("pinCode").isNumeric(), body("pinCode").isLength({ min: 5 })];
+};
+const userChangePasswordRules = () => {
+  return [body("pinCode").isNumeric(), body("pinCode").isLength({ min: 5 })];
 };
 
 const dataRules = () => {
@@ -30,4 +33,5 @@ module.exports = {
   userRules,
   dataRules,
   validateRequest,
+  userChangePasswordRules
 };
