@@ -13,7 +13,7 @@ router.post(
   validateRequest,
   dataMustNotExist,
   async (req, res) => {
-    console.log("data/post");
+    console.log("data/post",req.User._id);
     const data = new Data({
       userId: req.User._id,
       app: req.body.app,
@@ -29,15 +29,17 @@ router.post(
   }
 );
 router.get("/", async (req, res) => {
-  console.log("data/get");
-  const savedDatas = await Data.find();
+  console.log("data/get",req.User._id);
+  const savedDatas = await Data.find({
+    userId: req.User._id
+  });
   res.status(200).send({
     isSuccess: true,
     data:savedDatas
   });
 });
 router.get("/:id", dataMustExist, async (req, res) => {
-  console.log("data/get/:id");
+  console.log("data/get/:id",req.User._id);
   res.status(200).send({
     isSuccess: true,
     data: req.Data,
@@ -49,7 +51,7 @@ router.patch(
   validateRequest,
   dataMustExist,
   async (req, res) => {
-    console.log("data/patch/:id");
+    console.log("data/patch/:id",req.User._id);
     const query = { _id: req.Data._id };
     const updateResult = await Data.updateOne(query, {
       $set: {
@@ -74,7 +76,7 @@ router.patch(
 );
 
 router.delete("/:id", dataMustExist, async (req, res) => {
-  console.log("data/delete/:id");
+  console.log("data/delete/:id",req.User._id);
   const query = { _id: req.Data._id };
   var deleteResult = await Data.deleteOne(query);
   if (deleteResult.ok === 1) {
