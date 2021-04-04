@@ -1,0 +1,34 @@
+<div id="qrcode"></div>
+<script type="text/javascript" src="https://unpkg.com/qr-code-styling/lib/qr-code-styling.js"></script>
+<script src="socket.io/socket.io.js"></script>
+<script type="text/javascript">
+    function uuidv4() {
+        return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
+            (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+        );
+    }
+    function copy(text) {
+        var input = document.createElement('input');
+        input.setAttribute('value', text);
+        document.body.appendChild(input);
+        input.select();
+        var result = document.execCommand('copy');
+        document.body.removeChild(input);
+        location.reload();
+    }
+    const socket = io();
+    const room = uuidv4();    
+    socket.emit('joinRoom', room);
+    socket.on('copy', (message) => copy(message));
+
+    const qrCode = new QRCodeStyling({
+        width: 300,
+        height: 300,
+        data: room,
+        dotsOptions: {
+            color: "black",
+            type: "square"
+        },
+    });
+    qrCode.append(document.getElementById("qrcode"));
+</script>
